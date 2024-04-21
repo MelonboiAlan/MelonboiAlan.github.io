@@ -1,13 +1,392 @@
 <!DOCTYPE html>
-<html>
- <head>
-   <link rel="stylesheet" type="text/css" href="mystyle.css">
-   <title>Hello, world!</title>
-   <p1>stuff</p1>
- </head>
-<body>
-   <h1>Hello, world!</h1>
- </body>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #f2f2f2;
+            padding: 10px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #333;
+        }
+
+        nav a:hover {
+            color: #555;
+        }
+
+        section {
+            margin: 20px 0;
+        }
+
+        #gameBoard {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        #hangmanCanvas {
+            margin: 20px auto;
+            display: block;
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">My Website</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="services.html">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.html">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mt-4">
+        <h2>Welcome to My Website</h2>
+        <p>This is a simple website built using Bootstrap with a navbar, placeholder images, and placeholder text.</p>
+        <div class="row">
+            <div class="col-md-6">
+                <img src="https://via.placeholder.com/400" class="img-fluid" alt="Placeholder Image">
+            </div>
+            <div class="col-md-6">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dapibus tortor a velit fermentum, eu suscipit massa maximus. Duis eget fermentum risus, at volutpat risus. Morbi vitae arcu sit amet justo accumsan dictum ac vel risus. Nulla facilisi.</p>
+                <p>Phasellus tempor sodales suscipit. Mauris sit amet orci eget risus varius congue vel sit amet nunc. Nulla facilisi. Vivamus a lorem at lorem euismod dictum. Duis auctor mauris a nisl hendrerit, non consequat odio auctor.</p>
+            </div>
+        </div>
+
+        <!-- Games Collection -->
+        <nav>
+            <a href="#numberGame">Number Guessing Game</a>
+            <a href="#rpsGame">Rock Paper Scissors Game</a>
+            <a href="#memoryGame">Memory Card Game</a>
+            <a href="#hangmanGame">Hangman Game</a>
+        </nav>
+
+        <h1>Games Collection</h1>
+
+        <!-- Number Guessing Game -->
+        <section id="numberGame">
+            <h2>Number Guessing Game</h2>
+            <p>Guess a number between 1 and 100:</p>
+            <input type="number" id="numberGuessInput">
+            <button onclick="checkNumberGuess()">Guess</button>
+            <button onclick="startNumberGame()">New Game</button>
+            <p id="numberResult"></p>
+        </section>
+
+        <!-- Rock Paper Scissors Game -->
+        <section id="rpsGame">
+            <h2>Rock Paper Scissors Game</h2>
+            <p>Choose your move:</p>
+            <button onclick="playRPSGame('rock')">Rock</button>
+            <button onclick="playRPSGame('paper')">Paper</button>
+            <button onclick="playRPSGame('scissors')">Scissors</button>
+            <p id="rpsResult"></p>
+            <button onclick="startRPSGame()">New Game</button>
+        </section>
+
+        <!-- Memory Card Game -->
+        <section id="memoryGame">
+            <h2>Memory Card Game</h2>
+            <div id="gameBoard"></div>
+            <button onclick="startMemoryGame()">New Game</button>
+            <p id="memoryResult"></p>
+        </section>
+
+        <!-- Hangman Game -->
+        <section id="hangmanGame">
+            <h2>Hangman Game</h2>
+            <canvas id="hangmanCanvas" width="200" height="200"></canvas>
+            <p id="hangmanWord"></p>
+            <input type="text" id="hangmanGuessInput">
+            <button onclick="checkHangmanGuess()">Guess</button>
+            <button onclick="startHangmanGame()">New Game</button>
+            <p id="hangmanResult"></p>
+        </section>
+
+    </div>
+
+    <script>
+        // Number Guessing Game
+        let targetNumber;
+
+        function startNumberGame() {
+            targetNumber = Math.floor(Math.random() * 100) + 1;
+            document.getElementById('numberResult').textContent = '';
+            document.getElementById('numberGuessInput').value = '';
+        }
+
+        function checkNumberGuess() {
+            const guess = parseInt(document.getElementById('numberGuessInput').value);
+            const resultDisplay = document.getElementById('numberResult');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                resultDisplay.textContent = 'Please enter a valid number between 1 and 100.';
+                return;
+            }
+
+            if (guess === targetNumber) {
+                resultDisplay.textContent = `Congratulations! You guessed the number ${targetNumber} correctly.`;
+            } else if (guess < targetNumber) {
+                resultDisplay.textContent = 'Too low! Try again.';
+            } else {
+                resultDisplay.textContent = 'Too high! Try again.';
+            }
+        }
+
+        // Rock Paper Scissors Game
+        function playRPSGame(playerMove) {
+            const moves = ['rock', 'paper', 'scissors'];
+            const computerMove = moves[Math.floor(Math.random() * moves.length)];
+            const resultDisplay = document.getElementById('rpsResult');
+
+            if (playerMove === computerMove) {
+                resultDisplay.textContent = "It's a tie!";
+            } else if (
+                (playerMove === 'rock' && computerMove === 'scissors') ||
+                (playerMove === 'paper' && computerMove === 'rock') ||
+                (playerMove === 'scissors' && computerMove === 'paper')
+            ) {
+                resultDisplay.textContent = `You win! Computer chose ${computerMove}.`;
+            } else {
+                resultDisplay.textContent = `You lose! Computer chose ${computerMove}.`;
+            }
+        }
+
+        function startRPSGame() {
+            document.getElementById('rpsResult').textContent = '';
+        }
+
+        // Memory Card Game
+        const cards = [
+            'A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E',
+            'F', 'F', 'G', 'G', 'H', 'H', 'I', 'I', 'J', 'J',
+            'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O',
+            'P', 'P', 'Q', 'Q', 'R', 'R', 'S', 'S', 'T', 'T',
+            'U', 'U', 'V', 'V', 'W', 'W', 'X', 'X', 'Y', 'Y',
+            'Z', 'Z'
+        ];
+
+        let flippedCards = [];
+        let matchedCards = [];
+
+        function startMemoryGame() {
+            const shuffledCards = shuffleArray(cards);
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            for (let i = 0; i < shuffledCards.length; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-index', i);
+                card.textContent = '';
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            }
+
+            flippedCards = [];
+            matchedCards = [];
+            document.getElementById('memoryResult').textContent = '';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function flipCard() {
+            const cardIndex = parseInt(this.getAttribute('data-index'));
+
+            if (flippedCards.length < 2 && !flippedCards.includes(cardIndex) && !matchedCards.includes(cardIndex)) {
+                this.textContent = cards[cardIndex];
+                flippedCards.push(cardIndex);
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+
+            if (cards[card1] === cards[card2]) {
+                matchedCards.push(card1, card2);
+                flippedCards = [];
+
+                if (matchedCards.length === cards.length) {
+                    document.getElementById('memoryResult').textContent = 'Congratulations! You won the game!';
+                }
+            } else {
+                const cardElements = document.querySelectorAll('.card');
+                cardElements[card1].textContent = '';
+                cardElements[card2].textContent = '';
+                flippedCards = [];
+            }
+        }
+
+        // Hangman Game
+        const words = [
+            'javascript', 'html', 'css', 'python', 'java', 'openai', 'programming', 'computer',
+            'keyboard', 'monitor', 'algorithm', 'function', 'variable', 'database', 'server',
+            'client', 'network', 'internet', 'website', 'developer', 'frontend', 'backend',
+            'framework', 'library', 'repository', 'version', 'git', 'branch', 'commit', 'pull',
+            'push', 'merge', 'conflict', 'debugging', 'testing', 'automation', 'api', 'interface'
+        ];
+        let hangmanWord;
+        let hangmanGuesses = [];
+        let hangmanIncorrectGuesses = 0;
+        const canvas = document.getElementById('hangmanCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function startHangmanGame() {
+            hangmanWord = words[Math.floor(Math.random() * words.length)];
+            hangmanGuesses = [];
+            hangmanIncorrectGuesses = 0;
+
+            drawHangman();
+
+            const hangmanWordDisplay = hangmanWord.split('').map(letter => hangmanGuesses.includes(letter) ? letter : '_').join(' ');
+            document.getElementById('hangmanWord').textContent = hangmanWordDisplay;
+            document.getElementById('hangmanGuessInput').value = '';
+            document.getElementById('hangmanResult').textContent = '';
+        }
+
+        function checkHangmanGuess() {
+            const guess = document.getElementById('hangmanGuessInput').value.toLowerCase();
+
+            if (!guess || !/^[a-z]$/.test(guess)) {
+                document.getElementById('hangmanResult').textContent = 'Please enter a valid single letter guess.';
+                return;
+            }
+
+            if (hangmanGuesses.includes(guess)) {
+                document.getElementById('hangmanResult').textContent = 'You already guessed that letter.';
+                return;
+            }
+
+            hangmanGuesses.push(guess);
+
+            const hangmanWordDisplay = hangmanWord.split('').map(letter => hangmanGuesses.includes(letter) ? letter : '_').join(' ');
+            document.getElementById('hangmanWord').textContent = hangmanWordDisplay;
+
+            if (hangmanWordDisplay.includes('_')) {
+                if (!hangmanWord.includes(guess)) {
+                    hangmanIncorrectGuesses++;
+                    drawHangman();
+                }
+            } else {
+                document.getElementById('hangmanResult').textContent = 'Congratulations! You guessed the word!';
+            }
+
+            document.getElementById('hangmanGuessInput').value = '';
+        }
+
+        function drawHangman() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+
+            if (hangmanIncorrectGuesses > 0) {
+                // Draw base
+                ctx.moveTo(20, 180);
+                ctx.lineTo(180, 180);
+            }
+            if (hangmanIncorrectGuesses > 1) {
+                // Draw vertical pole
+                ctx.moveTo(100, 180);
+                ctx.lineTo(100, 20);
+            }
+            if (hangmanIncorrectGuesses > 2) {
+                // Draw horizontal pole
+                ctx.moveTo(100, 20);
+                ctx.lineTo(150, 20);
+            }
+            if (hangmanIncorrectGuesses > 3) {
+                // Draw rope
+                ctx.moveTo(150, 20);
+                ctx.lineTo(150, 50);
+            }
+            if (hangmanIncorrectGuesses > 4) {
+                // Draw head
+                ctx.arc(150, 70, 20, 0, Math.PI * 2);
+            }
+            if (hangmanIncorrectGuesses > 5) {
+                // Draw body
+                ctx.moveTo(150, 90);
+                ctx.lineTo(150, 140);
+            }
+            if (hangmanIncorrectGuesses > 6) {
+                // Draw arms
+                ctx.moveTo(130, 100);
+                ctx.lineTo(170, 100);
+            }
+            if (hangmanIncorrectGuesses > 7) {
+                // Draw legs
+                ctx.moveTo(140, 140);
+                ctx.lineTo(130, 170);
+                ctx.moveTo(160, 140);
+                ctx.lineTo(170, 170);
+            }
+
+            ctx.stroke();
+        }
+
+        // Initialize games
+        startNumberGame();
+        startRPSGame();
+        startMemoryGame();
+        startHangmanGame();
+    </script>
+</body>
 </html>
-<!DOCTYPE html>
